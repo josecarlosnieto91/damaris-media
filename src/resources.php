@@ -1,5 +1,6 @@
+<?php
+if (!defined('ABSPATH')) exit;
 
-// ─── Resource CPT ───
 add_action('init', 'damaris_register_resource_cpt');
 function damaris_register_resource_cpt() {
     register_post_type('damaris_resource', array(
@@ -7,8 +8,6 @@ function damaris_register_resource_cpt() {
             'name' => 'Recursos',
             'singular_name' => 'Recurso',
             'add_new' => 'Anadir recurso',
-            'add_new_item' => 'Anadir nuevo recurso',
-            'edit_item' => 'Editar recurso',
             'menu_name' => 'Recursos',
         ),
         'public' => true,
@@ -20,19 +19,15 @@ function damaris_register_resource_cpt() {
         'show_in_rest' => true,
     ));
     
-    register_post_meta('damaris_resource', 'resource_file', [
-        'show_in_rest' => true, 'single' => true, 'type' => 'string',
-    ]);
-    register_post_meta('damaris_resource', 'resource_type', [
-        'show_in_rest' => true, 'single' => true, 'type' => 'string',
-    ]);
+    register_post_meta('damaris_resource', 'resource_file', array('show_in_rest' => true, 'single' => true, 'type' => 'string'));
+    register_post_meta('damaris_resource', 'resource_type', array('show_in_rest' => true, 'single' => true, 'type' => 'string'));
 }
 
-// Resource metabox
 add_action('add_meta_boxes', 'damaris_resource_metabox');
 function damaris_resource_metabox() {
     add_meta_box('damaris_resource_details', 'Detalles del recurso', 'damaris_resource_metabox_cb', 'damaris_resource', 'normal', 'high');
 }
+
 function damaris_resource_metabox_cb($post) {
     wp_nonce_field('damaris_resource_save', 'damaris_resource_nonce');
     $file = get_post_meta($post->ID, 'resource_file', true);
@@ -51,19 +46,19 @@ function damaris_resource_metabox_cb($post) {
     </table>
     <?php
 }
+
 add_action('save_post', 'damaris_resource_save');
 function damaris_resource_save($pid) {
     if (!isset($_POST['damaris_resource_nonce']) || !wp_verify_nonce($_POST['damaris_resource_nonce'], 'damaris_resource_save')) return;
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
-    foreach (['resource_file', 'resource_type'] as $f) {
+    foreach (array('resource_file', 'resource_type') as $f) {
         if (isset($_POST[$f])) update_post_meta($pid, $f, sanitize_text_field($_POST[$f]));
     }
 }
 
-// Shortcode: [damaris_resources]
 add_shortcode('damaris_resources', 'damaris_resources_shortcode');
 function damaris_resources_shortcode() {
-    $resources = get_posts(['post_type' => 'damaris_resource', 'posts_per_page' => -1]);
+    $resources = get_posts(array('post_type' => 'damaris_resource', 'posts_per_page' => -1));
     if (empty($resources)) {
         return '<div style="text-align:center;padding:2rem;background:var(--bg-beige);border-radius:16px;">
             <p style="font-size:1.2rem;">🌱</p>
@@ -75,8 +70,8 @@ function damaris_resources_shortcode() {
     foreach ($resources as $r) {
         $file = get_post_meta($r->ID, 'resource_file', true);
         $type = get_post_meta($r->ID, 'resource_type', true);
-        $icons = ['guia' => '📖', 'ejercicio' => '🧘', 'diario' => '📓', 'audio' => '🎵'];
-        $icon = $icons[$type] ?? '📄';
+        $icons = array('guia' => '📖', 'ejercicio' => '🧘', 'diario' => '📓', 'audio' => '🎵');
+        $icon = isset($icons[$type]) ? $icons[$type] : '📄';
         
         $html .= '<div style="background:var(--bg-cream);border-radius:16px;padding:1.5rem;border:1px solid rgba(168,181,160,0.1);">';
         $html .= '<div style="font-size:2rem;margin-bottom:0.5rem;">' . $icon . '</div>';
