@@ -33,6 +33,7 @@ function damaris_media_init() {
     require_once DAMARIS_MEDIA_PATH . 'public/views/player.php';
     require_once DAMARIS_MEDIA_PATH . 'public/views/library.php';
 require_once DAMARIS_MEDIA_PATH . 'src/resources.php';
+require_once DAMARIS_MEDIA_PATH . 'src/video.php';
 }
 
 // ─── Register CPTs ───
