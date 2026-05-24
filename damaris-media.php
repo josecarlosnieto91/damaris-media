@@ -21,10 +21,10 @@ define('DAMARIS_MEDIA_PATH', plugin_dir_path(__FILE__));
 define('DAMARIS_MEDIA_URL', plugin_dir_url(__FILE__));
 
 // ─── Init ───
+add_action('init', 'damaris_media_register_cpts');
 add_action('plugins_loaded', 'damaris_media_init');
 function damaris_media_init() {
     load_plugin_textdomain('damaris-media', false, dirname(plugin_basename(__FILE__)) . '/languages');
-    damaris_media_register_cpts();
     
     if (is_admin()) {
         require_once DAMARIS_MEDIA_PATH . 'admin/views/admin.php';
