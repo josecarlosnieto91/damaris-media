@@ -1,4 +1,23 @@
 <?php
+
+// Access check helper
+function damaris_media_check_access($required_program = '') {
+    if (!is_user_logged_in()) return false;
+    if (empty($required_program)) return true;
+    
+    // RAÍZ program requires purchase
+    if ($required_program === 'raiz') {
+        $user_id = get_current_user_id();
+        $purchased = get_user_meta($user_id, 'damaris_purchased_courses', true) ?: [];
+        // Also check if user has RCP subscription
+        if (function_exists('rcp_get_subscription_id')) {
+            return true; // Has active subscription
+        }
+        return !empty($purchased);
+    }
+    
+    return true; // Non-restricted programs
+}
 // Shortcode: [damaris_audio_library program="raiz"]
 
 add_shortcode('damaris_audio_library', 'damaris_media_library');
